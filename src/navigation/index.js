@@ -1,3 +1,8 @@
+/* 
+   Unified navigation system created for all the components in the recipe application, 
+   allowing for seamless transitions between components whenever an event occurs that 
+   requires switching from one component to another.
+*/
 import * as React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -9,6 +14,7 @@ import RecipesFormScreen from "../screens/RecipesFormScreen";
 import FavoriteScreen from "../screens/FavoriteScreen";
 import RecipeDetailScreen from "../screens/RecipeDetailScreen";
 
+// Use Stack Navigation
 const Stack = createNativeStackNavigator();
 
 function AppNavigation() {

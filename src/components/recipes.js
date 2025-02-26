@@ -1,19 +1,28 @@
 import { View, Text, Pressable, Image, StyleSheet, FlatList, TouchableOpacity } from "react-native";
 import React from "react";
-import {widthPercentageToDP as wp, heightPercentageToDP as hp,} from "react-native-responsive-screen";
+import { widthPercentageToDP as wp, heightPercentageToDP as hp, } from "react-native-responsive-screen";
 import { useNavigation } from "@react-navigation/native";
 
 export default function Recipe({ categories, foods }) {
+
   const navigation = useNavigation();
 
+  // The item represents the recipe data, and index is the position of the recipe in the list.
   const renderItem = ({ item, index }) => (
-<ArticleCard item={item} index={index} navigation={navigation} />
+    <ArticleCard item={item} index={index} navigation={navigation} />
   );
 
   return (
     <View style={styles.container}>
       <View testID="recipesDisplay">
-            
+        <FlatList
+          data={foods}
+          keyExtractor={(item) => item.recipeId}
+          renderItem={renderItem}
+          numColumns={2}
+          columnWrapperStyle={styles.row}
+          showsVerticalScrollIndicator={false}
+        />
       </View>
     </View>
   );
@@ -22,9 +31,24 @@ export default function Recipe({ categories, foods }) {
 const ArticleCard = ({ item, index, navigation }) => {
   return (
     <View
-      style={[styles.cardContainer, { paddingLeft: 20, paddingRight: 15}]} testID="articleDisplay"
+      style={[styles.cardContainer, { paddingLeft: 20, paddingRight: 15 }]} testID="articleDisplay"
     >
-   
+
+      <TouchableOpacity
+        onPress={() => navigation.navigate("RecipeDetail", { ...item })}
+        style={{ width: "100%" }}
+      >
+        <Image
+          source={{ uri: item.recipeImage }}
+          style={styles.articleImage}
+          resizeMode="contain"
+        />
+        <Text style={styles.articleText}>{item.recipeName}</Text>
+        <Text style={styles.articleDescription} numberOfLines={2}>
+          {item.cookingDescription}
+        </Text>
+      </TouchableOpacity>
+
     </View>
   );
 };
@@ -50,7 +74,7 @@ const styles = StyleSheet.create({
   },
   articleImage: {
     width: "100%",
-   
+    height: hp(15),
     borderRadius: 35,
     backgroundColor: "rgba(0, 0, 0, 0.05)", // bg-black/5
   },
