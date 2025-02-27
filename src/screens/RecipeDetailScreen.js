@@ -26,7 +26,8 @@ export default function RecipeDetailScreen(props) {
   // hook is used to navigate back to the previous screen and to 
   // toggle the favorite status of the recipe.
   const navigation = useNavigation();
-
+  
+  // Use Redux dispatch to add the recipe to favorites
   const handleToggleFavorite = () => {
     dispatch(toggleFavorite(recipe)); // Dispatch the recipe to favorites
   };
@@ -105,7 +106,7 @@ export default function RecipeDetailScreen(props) {
           <Text style={styles.sectionTitle}>Ingredients</Text>
           <View style={styles.ingredientsList} testID="ingredientsList">
             {(recipe.ingredients).map((i) => (
-              <View key={i} style={styles.ingredientItem}>
+              <View key={`${i.ingredientName}-${i.measure}`} style={styles.ingredientItem}>
                 <View style={styles.ingredientBullet} />
                 <Text style={styles.ingredientText}>
                   {/* {meal["strMeasure" + i]} {meal["strIngredient" + i]} */}
