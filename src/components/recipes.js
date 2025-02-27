@@ -35,6 +35,8 @@ const ArticleCard = ({ item, index, navigation }) => {
     >
 
       <TouchableOpacity
+        // Navigate to RecipeDetailScreen passing the recipe data. 
+        // Spread item object as a dictonary
         onPress={() => navigation.navigate("RecipeDetail", { ...item })}
         style={{ width: "100%" }}
       >
