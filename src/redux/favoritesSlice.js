@@ -10,6 +10,7 @@ const favoritesSlice = createSlice({
   reducers: {
     toggleFavorite: (state, action) => {
       const recipe = action.payload;
+      // Find the position (index) of the recipe within the favorites array
       const existingIndex = state.favoriterecipes.findIndex(
         (item) => item.idFood === recipe.idFood
       );

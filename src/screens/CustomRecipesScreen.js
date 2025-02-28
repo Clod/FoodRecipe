@@ -6,7 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import {
   widthPercentageToDP as wp,
@@ -16,19 +16,29 @@ import { useDispatch, useSelector } from "react-redux";
 import { toggleFavorite } from "../redux/favoritesSlice";
 
 export default function CustomRecipesScreen() {
+  console.log("CustomRecipesScreen re-rendered"); // Check if the component re-renders
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const [isFavourite, setIsFavourite] = useState(false);
+  const [, updateState] = useState();
+  const forceUpdate = React.useCallback(() => updateState({}), []);
 
   const route = useRoute();
-  const { recipe } = route.params || {}; // Pass the  object as a parameter
-  console.log('recipe', recipe);
+  const { recipe } = route.params || {};
+  console.log("recipe", recipe);
 
-  const favoriteRecipe = useSelector(
-    (state) => state.favorites.favoriterecipes
-  );
-  console.log('favoriteRecipe from custom', favoriteRecipe);
+  const favoriteRecipe = useSelector((state) => state.favorites.favoriterecipes);
+  console.log("favoriteRecipe from custom", favoriteRecipe);
 
-  const isFavourite = favoriteRecipe.includes(recipe.idCategory); // Adjust this according to your recipe structure
+  // Use useEffect to update isFavourite
+  useEffect(() => {
+    console.log("useEffect running");
+    if (recipe) {
+      setIsFavourite(
+        favoriteRecipe.some((favRecipe) => favRecipe.id === recipe.id)
+      );
+    }
+  }, [favoriteRecipe, recipe]);
 
   if (!recipe) {
     return (
@@ -39,14 +49,18 @@ export default function CustomRecipesScreen() {
   }
 
   const handleToggleFavorite = () => {
-    dispatch(toggleFavorite(recipe)); // Adjust the action to handle recipe
+    dispatch(toggleFavorite(recipe));
+    forceUpdate()//force a re-render
   };
+  
+  console.log("isFavourite before return:", isFavourite); // Check isFavourite here
 
   return (
     <ScrollView
       style={styles.container}
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={styles.scrollContent} testID="scrollContent"
+      contentContainerStyle={styles.scrollContent}
+      testID="scrollContent"
     >
       {/* Recipe Image */}
       <View style={styles.imageContainer} testID="imageContainer">
@@ -54,9 +68,7 @@ export default function CustomRecipesScreen() {
           <Image source={{ uri: recipe.image }} style={styles.recipeImage} />
         )}
       </View>
-      <View
-        style={styles.topButtonsContainer} testID="topButtonsContainer"
-      >
+      <View style={styles.topButtonsContainer} testID="topButtonsContainer">
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={styles.backButton}
@@ -64,10 +76,18 @@ export default function CustomRecipesScreen() {
           <Text>Back</Text>
         </TouchableOpacity>
         <TouchableOpacity
+          key={recipe.id + isFavourite.toString()}
           onPress={handleToggleFavorite}
-          style={styles.favoriteButton}
+          style={[
+            styles.favoriteButton,
+            {
+              backgroundColor: "white",
+            },
+          ]}
         >
-          <Text>{isFavourite ? "♥" : "♡"}</Text>
+          <Text>
+            {isFavourite ? "♥" : "♡"}
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -75,7 +95,6 @@ export default function CustomRecipesScreen() {
       <View style={styles.contentContainer} testID="contentContainer">
         <Text style={styles.recipeTitle}>{recipe.title}</Text>
         <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Content</Text>
           <Text style={styles.contentText}>{recipe.description}</Text>
         </View>
       </View>

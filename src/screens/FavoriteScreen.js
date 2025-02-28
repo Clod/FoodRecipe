@@ -15,22 +15,26 @@ import {
 } from "react-native-responsive-screen";
 
 export default function FavoriteScreen() {
+  // Get the navigation object
   const navigation = useNavigation();
 
   // Assuming you have a similar structure for recipes in your Redux store
+  // useSelector hook retrieves the favoriteRecipes from the Redux store.
   const favoriteRecipes = useSelector((state) => state.favorites);
+  // Extract the list of favorite recipes if any
   const favoriteRecipesList = favoriteRecipes?.favoriterecipes || [];
+  // log in console
   console.log(favoriteRecipes.favoriterecipes);
-  console.log('favoriteRecipesList',favoriteRecipesList);
-  
-  
+  console.log('favoriteRecipesList', favoriteRecipesList);
 
+  // If the list is empy...
   if (favoriteRecipesList.length === 0) {
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyText}>No favorite recipes yet!</Text>
         {/* add back button */}
         <TouchableOpacity
+          // go back to previous screen 
           onPress={() => navigation.goBack()}
           style={{
             backgroundColor: "#2563EB",
@@ -58,7 +62,7 @@ export default function FavoriteScreen() {
           My Favorite Recipes
         </Text>
       </View>
-    
+
       <TouchableOpacity
         onPress={() => navigation.goBack()}
         style={{
@@ -71,9 +75,39 @@ export default function FavoriteScreen() {
           marginLeft: 20,
         }}
       >
-        <Text style={{ color: "#fff" }}>Go back</Text>
+        <Text style={{ color: "#fff", marginBottom: 10 }}>Go back</Text>
       </TouchableOpacity>
-    
+
+      {/* List of Favorite Recipes */}
+      <FlatList
+        data={favoriteRecipesList}
+        contentContainerStyle={styles.listContentContainer}
+        keyExtractor={(item) => item.idFood || item.idCategory || item.title} // key updated
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            onPress={() => {
+              if (item.idFood) {
+                navigation.navigate("RecipeDetail", { ...item })
+              } else {
+                navigation.navigate("CustomRecipesScreen", { recipe: item })
+              }
+            }}
+            style={styles.cardContainer}
+          >
+            <Image
+              source={{ uri: item.recipeImage || item.image }} // updated
+              style={styles.recipeImage}
+            />
+            <Text style={styles.recipeTitle}>
+              {item.recipeName?.length > 20 // updated
+                ? item.recipeName.slice(0, 20) + "..."
+                : item.recipeName || item.title}
+            </Text>
+          </TouchableOpacity>
+        )}
+        showsVerticalScrollIndicator={false}
+      />
+
     </>
   );
 }
