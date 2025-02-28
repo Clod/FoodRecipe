@@ -20,9 +20,6 @@ export default function CustomRecipesScreen() {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [isFavourite, setIsFavourite] = useState(false);
-  const [, updateState] = useState();
-  const forceUpdate = React.useCallback(() => updateState({}), []);
-
   const route = useRoute();
   const { recipe } = route.params || {};
   console.log("recipe", recipe);
@@ -35,7 +32,7 @@ export default function CustomRecipesScreen() {
     console.log("useEffect running");
     if (recipe) {
       setIsFavourite(
-        favoriteRecipe.some((favRecipe) => favRecipe.id === recipe.id)
+        favoriteRecipe.some((favRecipe) => favRecipe.idFood === recipe.idFood)
       );
     }
   }, [favoriteRecipe, recipe]);
@@ -50,10 +47,7 @@ export default function CustomRecipesScreen() {
 
   const handleToggleFavorite = () => {
     dispatch(toggleFavorite(recipe));
-    forceUpdate()//force a re-render
   };
-  
-  console.log("isFavourite before return:", isFavourite); // Check isFavourite here
 
   return (
     <ScrollView
@@ -64,9 +58,9 @@ export default function CustomRecipesScreen() {
     >
       {/* Recipe Image */}
       <View style={styles.imageContainer} testID="imageContainer">
-        {recipe.image && (
+        {recipe.image ? (
           <Image source={{ uri: recipe.image }} style={styles.recipeImage} />
-        )}
+        ) : <Image source={{ uri: "https://www.creativefabrica.com/wp-content/uploads/2023/05/29/Hand-Drawn-Food-Clipart-Illustration-Graphics-70816445-1-1-580x434.jpg" }} style={styles.recipeImage} /> }
       </View>
       <View style={styles.topButtonsContainer} testID="topButtonsContainer">
         <TouchableOpacity
@@ -76,7 +70,7 @@ export default function CustomRecipesScreen() {
           <Text>Back</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          key={recipe.id + isFavourite.toString()}
+          key={recipe.idFood + isFavourite.toString()}
           onPress={handleToggleFavorite}
           style={[
             styles.favoriteButton,

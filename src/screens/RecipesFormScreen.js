@@ -21,7 +21,12 @@ export default function RecipesFormScreen({ route, navigation }) {
   const saverecipe = async () => {
     console.log("Saving recipe...");
     try {
-      const newrecipe = { title, image, description };
+      const newrecipe = { 
+        title, 
+        image, 
+        description,
+        idFood: recipeToEdit ? recipeToEdit.idFood : `custom_${Date.now()}` // Preserve existing idFood when editing
+      };
       // Retrieve existing recipes from local storage
       const existingrecipes = await AsyncStorage.getItem("customrecipes");
       // Parse the retrieved data into an array (recipes) or create an empty one

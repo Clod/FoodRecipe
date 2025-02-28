@@ -82,11 +82,12 @@ export default function FavoriteScreen() {
       <FlatList
         data={favoriteRecipesList}
         contentContainerStyle={styles.listContentContainer}
-        keyExtractor={(item) => item.idFood || item.idCategory || item.title} // key updated
+        keyExtractor={(item) => item.idFood}
         renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() => {
-              if (item.idFood) {
+              // If the recipe has recipeName, it's from API, otherwise it's custom
+              if (item.recipeName) {
                 navigation.navigate("RecipeDetail", { ...item })
               } else {
                 navigation.navigate("CustomRecipesScreen", { recipe: item })
@@ -95,12 +96,12 @@ export default function FavoriteScreen() {
             style={styles.cardContainer}
           >
             <Image
-              source={{ uri: item.recipeImage || item.image }} // updated
+              source={{ uri: item.recipeImage || item.image }}
               style={styles.recipeImage}
             />
             <Text style={styles.recipeTitle}>
-              {item.recipeName?.length > 20 // updated
-                ? item.recipeName.slice(0, 20) + "..."
+              {(item.recipeName || item.title)?.length > 20
+                ? (item.recipeName || item.title).slice(0, 20) + "..."
                 : item.recipeName || item.title}
             </Text>
           </TouchableOpacity>
