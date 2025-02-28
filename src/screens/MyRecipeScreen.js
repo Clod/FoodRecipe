@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -21,22 +21,26 @@ export default function MyRecipeScreen() {
   const [recipes, setrecipes] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Fetch recipes from AsyncStorage when the component mounts and updates the recipes state.
-    const fetchrecipes = async () => {
-      try {
-        const storedrecipes = await AsyncStorage.getItem("customrecipes");
-        if (storedrecipes !== null) {
-          setrecipes(JSON.parse(storedrecipes));
-        }
-      } catch (error) {
-        console.error("Error fetching recipes:", error);
-      } finally {
-        setLoading(false);
+  // Fetch recipes from AsyncStorage and update the recipes state
+  const fetchrecipes = async () => {
+    try {
+      const storedrecipes = await AsyncStorage.getItem("customrecipes");
+      if (storedrecipes !== null) {
+        setrecipes(JSON.parse(storedrecipes));
       }
-    };
-    fetchrecipes();
-  }, []);
+    } catch (error) {
+      console.error("Error fetching recipes:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Use useFocusEffect to refresh data when screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchrecipes();
+    }, [])
+  );
 
   const handleAddrecipe = () => {
     navigation.navigate("RecipesFormScreen");
@@ -61,8 +65,8 @@ export default function MyRecipeScreen() {
     navigation.navigate("RecipesFormScreen", {
       recipeToEdit: recipe,
       recipeIndex: index,
+      onrecipeEdited: fetchrecipes, // Pass the callback to refresh recipes
     });
-
   };
 
   return (
