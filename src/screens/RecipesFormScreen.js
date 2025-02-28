@@ -13,6 +13,7 @@ export default function RecipesFormScreen({ route, navigation }) {
   // used for editing, the state is initialized with the recipe's existing data; otherwise, 
   // it's set to empty strings for new recipes.
   const [title, setTitle] = useState(recipeToEdit ? recipeToEdit.title : "");
+  const [ingredientsList, setIngredientsList] = useState(recipeToEdit ? recipeToEdit.ingredientsList : "");
   const [image, setImage] = useState(recipeToEdit ? recipeToEdit.image : "");
   const [description, setDescription] = useState(
     recipeToEdit ? recipeToEdit.description : ""
@@ -21,9 +22,10 @@ export default function RecipesFormScreen({ route, navigation }) {
   const saverecipe = async () => {
     console.log("Saving recipe...");
     try {
-      const newrecipe = { 
-        title, 
-        image, 
+      const newrecipe = {
+        title,
+        image,
+        ingredientsList,
         description,
         idFood: recipeToEdit ? recipeToEdit.idFood : `custom_${Date.now()}` // Preserve existing idFood when editing
       };
@@ -69,8 +71,18 @@ export default function RecipesFormScreen({ route, navigation }) {
       ) : (
         <Text style={styles.imagePlaceholder}>Upload Image URL</Text>
       )}
+
       <TextInput
-        placeholder="Description"
+        placeholder="Ingredients List"
+        value={ingredientsList}
+        onChangeText={setIngredientsList}
+        multiline={true}
+        numberOfLines={4}
+        style={[styles.input, { height: hp(20), textAlignVertical: "top" }]}
+      />
+
+      <TextInput
+        placeholder="Step-by-step instructions"
         value={description}
         onChangeText={setDescription}
         multiline={true}
